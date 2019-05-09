@@ -5,7 +5,9 @@ class ApplicationController < Sinatra::Base
   configure do
     set :public_folder, 'public'
     set :views, 'app/views'
+
     enable :sessions
+    set :session_secret, "l32r90jsof902235235r9dsoiajfoi3"
   end
 
   get '/' do
@@ -16,7 +18,7 @@ class ApplicationController < Sinatra::Base
     if logged_in?
       redirect '/tweets'
     else
-      erb :'users/new'
+      erb :'users/create_user'
     end
   end
 
@@ -37,7 +39,8 @@ class ApplicationController < Sinatra::Base
 
   post '/signup' do
     if params[:username] != "" && params[:email] != "" && params[:password] != ""
-      user = User.create(params)
+      user = User.create(:username => params[:username], :email => params[:email],
+        :password => params[:password])
       session[:user_id] = user.id
       redirect '/tweets'
     else
@@ -52,7 +55,7 @@ class ApplicationController < Sinatra::Base
       redirect '/tweets'
     else
       @login_failed = true
-      erb :login
+      erb :'/users/login'
     end
   end
 
